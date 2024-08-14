@@ -79,7 +79,12 @@ class DynamicToFixedShape(Pass):
             for name, shape in zip(config["input_name"], config["input_shape"]):
                 make_input_shape_fixed(onnx_model.graph, name, shape)
         # update the output shapes to make them fixed
-        fix_output_shapes(onnx_model)
+        try:
+            from onnxruntime.tools.onnx_model_utils import fix_output_shapes_path
+            
+            fix_output_shapes_path(onnx_model, model.model_path)
+        except ImportError:
+            fix_output_shapes(onnx_model)
         return model_proto_to_olive_model(onnx_model, output_model_path, config)
 
 
